@@ -31,8 +31,8 @@ const contactLinks = [
   {
     name: "Resume",
     icon: <FaFilePdf className="text-xl" />,
-    url: "/Aryan-Varmora-Resume.pdf",
-  },
+    url: `${import.meta.env.BASE_URL}Aryan-Varmora-Resume.pdf`,
+  },  
 ];
 
 const Contact = () => {

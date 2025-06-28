@@ -1,278 +1,182 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import { useGraph } from '@react-three/fiber';
 import { useAnimations, useFBX, useGLTF } from '@react-three/drei';
 import { SkeletonUtils } from 'three-stdlib';
 
-const Developer = ({ animationName = 'idle', ...props }) => {
+// Animation configuration
+const ANIMATION_CONFIG = {
+  fadeTime: 0.5,
+  defaultAnimation: 'idle',
+  animations: ['idle', 'salute', 'clapping', 'victory']
+};
+
+// Asset paths
+const getAssetPath = (filename) => `${import.meta.env.BASE_URL}3d/${filename}`;
+
+const Developer = ({ 
+  animationName = ANIMATION_CONFIG.defaultAnimation, 
+  scale = [3, 3, 3],
+  showDebug = false,
+  onAnimationChange,
+  ...props 
+}) => {
   const group = useRef();
-  const [animationsLoaded, setAnimationsLoaded] = useState(false);
-  const [availableAnimations, setAvailableAnimations] = useState({});
+  const currentAnimation = useRef(animationName);
 
-  // Load the main model
-  const { scene } = useGLTF('/3d/developer.glb');
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone);
-
-  // Load animations with individual error handling
-  const loadAnimations = () => {
-    const animations = {};
-    
-    try {
-      const { animations: idle } = useFBX('/3d/idle.fbx');
-      if (idle && idle[0]) {
-        idle[0].name = 'idle';
-        animations.idle = idle[0];
-      }
-    } catch (error) {
-      console.warn('Failed to load idle animation:', error);
-    }
-
-    try {
-      const { animations: salute } = useFBX('/3d/salute.fbx');
-      if (salute && salute[0]) {
-        salute[0].name = 'salute';
-        animations.salute = salute[0];
-      }
-    } catch (error) {
-      console.warn('Failed to load salute animation:', error);
-    }
-
-    try {
-      const { animations: clapping } = useFBX('/3d/clapping.fbx');
-      if (clapping && clapping[0]) {
-        clapping[0].name = 'clapping';
-        animations.clapping = clapping[0];
-      }
-    } catch (error) {
-      console.warn('Failed to load clapping animation:', error);
-    }
-
-    try {
-      const { animations: victory } = useFBX('/3d/victory.fbx');
-      if (victory && victory[0]) {
-        victory[0].name = 'victory';
-        animations.victory = victory[0];
-      }
-    } catch (error) {
-      console.warn('Failed to load victory animation:', error);
-    }
-
-    return animations;
-  };
-
-  // Get all available animations
-  const animations = loadAnimations();
-  const animationArray = Object.values(animations).filter(Boolean);
+  // Load GLB model with error handling
+  const { scene, error: modelError } = useGLTF(getAssetPath('developer.glb'));
   
-  // Use animations hook only with successfully loaded animations
-  const { actions } = useAnimations(animationArray, group);
+  // Clone scene for independent instances
+  const clone = useMemo(() => {
+    if (!scene) return null;
+    try {
+      return SkeletonUtils.clone(scene);
+    } catch (error) {
+      console.error('Error cloning scene:', error);
+      return null;
+    }
+  }, [scene]);
 
-  // Update available animations state
-  useEffect(() => {
-    setAvailableAnimations(animations);
-    setAnimationsLoaded(animationArray.length > 0);
+  const { nodes, materials } = useGraph(clone || {});
+
+  // Load FBX animations with error handling
+  const animationFiles = useMemo(() => {
+    const files = {};
+    ANIMATION_CONFIG.animations.forEach(name => {
+      try {
+        files[name] = useFBX(getAssetPath(`${name}.fbx`));
+      } catch (error) {
+        console.error(`Error loading ${name} animation:`, error);
+      }
+    });
+    return files;
   }, []);
 
-  // Handle animation changes
-  useEffect(() => {
-    if (!actions || Object.keys(actions).length === 0) {
-      console.log('No animations available yet');
-      return;
-    }
+  // Process animations
+  const animations = useMemo(() => {
+    const processedAnimations = [];
+    
+    Object.entries(animationFiles).forEach(([name, fbx]) => {
+      if (fbx?.animations?.[0]) {
+        fbx.animations[0].name = name;
+        processedAnimations.push(fbx.animations[0]);
+      }
+    });
+    
+    return processedAnimations;
+  }, [animationFiles]);
+
+  const { actions, mixer } = useAnimations(animations, group);
+
+  // Animation switching logic
+  const switchAnimation = useCallback((newAnimationName) => {
+    if (!actions || !newAnimationName) return;
+
+    const targetAction = actions[newAnimationName] || actions[ANIMATION_CONFIG.defaultAnimation];
+    if (!targetAction) return;
 
     // Stop all current animations
     Object.values(actions).forEach(action => {
-      if (action && typeof action.stop === 'function') {
-        try {
-          action.stop();
-        } catch (error) {
-          console.warn('Error stopping animation:', error);
-        }
+      if (action.isRunning()) {
+        action.fadeOut(ANIMATION_CONFIG.fadeTime);
       }
     });
 
-    // Try to play the requested animation
-    const targetAction = actions[animationName];
-    
-    if (targetAction && typeof targetAction.play === 'function') {
-      try {
-        targetAction.reset().fadeIn(0.5).play();
-        console.log(`Playing animation: ${animationName}`);
-        
-        return () => {
-          try {
-            if (targetAction && typeof targetAction.fadeOut === 'function') {
-              targetAction.fadeOut(0.5);
-            }
-          } catch (error) {
-            console.warn('Error fading out animation:', error);
-          }
-        };
-      } catch (error) {
-        console.warn(`Error playing animation "${animationName}":`, error);
-        
-        // Fallback to idle if available
-        const idleAction = actions['idle'];
-        if (idleAction && animationName !== 'idle') {
-          try {
-            idleAction.reset().fadeIn(0.5).play();
-            console.log('Falling back to idle animation');
-            
-            return () => {
-              try {
-                if (idleAction && typeof idleAction.fadeOut === 'function') {
-                  idleAction.fadeOut(0.5);
-                }
-              } catch (error) {
-                console.warn('Error fading out idle animation:', error);
-              }
-            };
-          } catch (fallbackError) {
-            console.warn('Error playing fallback idle animation:', fallbackError);
-          }
-        }
-      }
-    } else {
-      console.warn(`Animation "${animationName}" not found. Available:`, Object.keys(actions));
-      
-      // Try to play idle as ultimate fallback
-      const idleAction = actions['idle'];
-      if (idleAction && animationName !== 'idle') {
-        try {
-          idleAction.reset().fadeIn(0.5).play();
-          console.log('Using idle as fallback animation');
-          
-          return () => {
-            try {
-              if (idleAction && typeof idleAction.fadeOut === 'function') {
-                idleAction.fadeOut(0.5);
-              }
-            } catch (error) {
-              console.warn('Error fading out fallback animation:', error);
-            }
-          };
-        } catch (error) {
-          console.warn('Error playing fallback animation:', error);
-        }
-      }
-    }
-  }, [animationName, actions, animationsLoaded]);
+    // Start new animation
+    targetAction.reset().fadeIn(ANIMATION_CONFIG.fadeTime).play();
+    currentAnimation.current = newAnimationName;
 
-  // Debug: Log available animations
+    // Callback for animation change
+    onAnimationChange?.(newAnimationName);
+  }, [actions, onAnimationChange]);
+
+  // Handle animation changes
+  useEffect(() => {
+    if (animationName !== currentAnimation.current) {
+      switchAnimation(animationName);
+    }
+  }, [animationName, switchAnimation]);
+
+  // Initial animation setup
   useEffect(() => {
     if (actions && Object.keys(actions).length > 0) {
-      console.log('Available animations:', Object.keys(actions));
+      switchAnimation(animationName);
     }
-  }, [actions]);
+  }, [actions, animationName, switchAnimation]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (mixer) {
+        mixer.stopAllAction();
+      }
+    };
+  }, [mixer]);
+
+  // Error handling
+  if (modelError) {
+    console.error('Failed to load developer model:', modelError);
+    return null;
+  }
+
+  if (!clone || !nodes) {
+    return null; // Loading state - you might want to add a loading spinner here
+  }
+
+  // Render body parts
+  const renderBodyPart = (nodeName, materialName, additionalProps = {}) => {
+    const node = nodes[nodeName];
+    const material = materials[materialName];
+    
+    if (!node || !material) return null;
+
+    return (
+      <skinnedMesh
+        key={nodeName}
+        geometry={node.geometry}
+        material={material}
+        skeleton={node.skeleton}
+        morphTargetDictionary={node.morphTargetDictionary}
+        morphTargetInfluences={node.morphTargetInfluences}
+        {...additionalProps}
+      />
+    );
+  };
 
   return (
-    <group ref={group} {...props} dispose={null}>
-      {/* Status indicator for debugging */}
-      {process.env.NODE_ENV === 'development' && (
+    <group ref={group} scale={scale} {...props} dispose={null}>
+      {/* Debug indicator */}
+      {(showDebug || process.env.NODE_ENV === 'development') && (
         <mesh position={[0, 3, 0]} scale={0.1}>
           <sphereGeometry args={[1, 8, 8]} />
-          <meshBasicMaterial color={animationsLoaded ? '#00ff00' : '#ff0000'} />
+          <meshBasicMaterial 
+            color={actions && actions[animationName] ? '#00ff00' : '#ff0000'} 
+          />
         </mesh>
       )}
-      
+
+      {/* Skeleton root */}
       {nodes.Hips && <primitive object={nodes.Hips} />}
-      
-      {nodes.Wolf3D_Hair && (
-        <skinnedMesh
-          geometry={nodes.Wolf3D_Hair.geometry}
-          material={materials.Wolf3D_Hair}
-          skeleton={nodes.Wolf3D_Hair.skeleton}
-        />
-      )}
-      
-      {nodes.Wolf3D_Glasses && (
-        <skinnedMesh
-          geometry={nodes.Wolf3D_Glasses.geometry}
-          material={materials.Wolf3D_Glasses}
-          skeleton={nodes.Wolf3D_Glasses.skeleton}
-        />
-      )}
-      
-      {nodes.Wolf3D_Body && (
-        <skinnedMesh
-          geometry={nodes.Wolf3D_Body.geometry}
-          material={materials.Wolf3D_Body}
-          skeleton={nodes.Wolf3D_Body.skeleton}
-        />
-      )}
-      
-      {nodes.Wolf3D_Outfit_Bottom && (
-        <skinnedMesh
-          geometry={nodes.Wolf3D_Outfit_Bottom.geometry}
-          material={materials.Wolf3D_Outfit_Bottom}
-          skeleton={nodes.Wolf3D_Outfit_Bottom.skeleton}
-        />
-      )}
-      
-      {nodes.Wolf3D_Outfit_Footwear && (
-        <skinnedMesh
-          geometry={nodes.Wolf3D_Outfit_Footwear.geometry}
-          material={materials.Wolf3D_Outfit_Footwear}
-          skeleton={nodes.Wolf3D_Outfit_Footwear.skeleton}
-        />
-      )}
-      
-      {nodes.Wolf3D_Outfit_Top && (
-        <skinnedMesh
-          geometry={nodes.Wolf3D_Outfit_Top.geometry}
-          material={materials.Wolf3D_Outfit_Top}
-          skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
-        />
-      )}
-      
-      {nodes.EyeLeft && (
-        <skinnedMesh
-          name="EyeLeft"
-          geometry={nodes.EyeLeft.geometry}
-          material={materials.Wolf3D_Eye}
-          skeleton={nodes.EyeLeft.skeleton}
-          morphTargetDictionary={nodes.EyeLeft.morphTargetDictionary}
-          morphTargetInfluences={nodes.EyeLeft.morphTargetInfluences}
-        />
-      )}
-      
-      {nodes.EyeRight && (
-        <skinnedMesh
-          name="EyeRight"
-          geometry={nodes.EyeRight.geometry}
-          material={materials.Wolf3D_Eye}
-          skeleton={nodes.EyeRight.skeleton}
-          morphTargetDictionary={nodes.EyeRight.morphTargetDictionary}
-          morphTargetInfluences={nodes.EyeRight.morphTargetInfluences}
-        />
-      )}
-      
-      {nodes.Wolf3D_Head && (
-        <skinnedMesh
-          name="Wolf3D_Head"
-          geometry={nodes.Wolf3D_Head.geometry}
-          material={materials.Wolf3D_Skin}
-          skeleton={nodes.Wolf3D_Head.skeleton}
-          morphTargetDictionary={nodes.Wolf3D_Head.morphTargetDictionary}
-          morphTargetInfluences={nodes.Wolf3D_Head.morphTargetInfluences}
-        />
-      )}
-      
-      {nodes.Wolf3D_Teeth && (
-        <skinnedMesh
-          name="Wolf3D_Teeth"
-          geometry={nodes.Wolf3D_Teeth.geometry}
-          material={materials.Wolf3D_Teeth}
-          skeleton={nodes.Wolf3D_Teeth.skeleton}
-          morphTargetDictionary={nodes.Wolf3D_Teeth.morphTargetDictionary}
-          morphTargetInfluences={nodes.Wolf3D_Teeth.morphTargetInfluences}
-        />
-      )}
+
+      {/* Body parts */}
+      {renderBodyPart('Wolf3D_Hair', 'Wolf3D_Hair')}
+      {renderBodyPart('Wolf3D_Glasses', 'Wolf3D_Glasses')}
+      {renderBodyPart('Wolf3D_Body', 'Wolf3D_Body')}
+      {renderBodyPart('Wolf3D_Outfit_Bottom', 'Wolf3D_Outfit_Bottom')}
+      {renderBodyPart('Wolf3D_Outfit_Footwear', 'Wolf3D_Outfit_Footwear')}
+      {renderBodyPart('Wolf3D_Outfit_Top', 'Wolf3D_Outfit_Top')}
+      {renderBodyPart('EyeLeft', 'Wolf3D_Eye')}
+      {renderBodyPart('EyeRight', 'Wolf3D_Eye')}
+      {renderBodyPart('Wolf3D_Head', 'Wolf3D_Skin')}
+      {renderBodyPart('Wolf3D_Teeth', 'Wolf3D_Teeth')}
     </group>
   );
 };
 
-// Preload the model
-useGLTF.preload('/3d/developer.glb');
+// Preload assets
+useGLTF.preload(getAssetPath('developer.glb'));
+ANIMATION_CONFIG.animations.forEach(name => {
+  useFBX.preload(getAssetPath(`${name}.fbx`));
+});
 
 export default Developer;
