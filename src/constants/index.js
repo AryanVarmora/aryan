@@ -1,32 +1,11 @@
 import { fordham, dev, soft } from "../assets/images";
 
 import {
-    car,
+
     contact,
-    css,
-    estate,
-    express,
-    git,
-    github,
-    html,
-    javascript,
+
     linkedin,
-    mongodb,
-    motion,
-    mui,
-    nextjs,
-    nodejs,
-    planet,
-    pricewise,
-    react,
-    redux,
-    sass,
-    snapgram,
-    summiz,
-    tailwindcss,
-    threads,
-    typescript,
-    atom,
+
     hour,
     laptop,
     bar,
@@ -38,74 +17,97 @@ import {
     cart,
     soundon,
     soundoff,
-    airplane
+    airplane,
+    planet,
+    github
+
 
     
     
 } from "../assets/icons";
 
 export const skills = [
-    { imageUrl: javascript, name: "JavaScript", type: "Frontend" },
-    { imageUrl: typescript, name: "TypeScript", type: "Frontend" },
-    { imageUrl: react, name: "React", type: "Frontend" },
-    { imageUrl: nextjs, name: "Next.js", type: "Frontend" },
-    { imageUrl: nodejs, name: "Node.js", type: "Backend" },
-    { imageUrl: express, name: "Express", type: "Backend" },
-    { imageUrl: mongodb, name: "MongoDB", type: "Database" },
-    { imageUrl: tailwindcss, name: "Tailwind CSS", type: "Frontend" },
-    { imageUrl: mui, name: "Material UI", type: "Frontend" },
-    { imageUrl: css, name: "CSS", type: "Frontend" },
-    { imageUrl: html, name: "HTML", type: "Frontend" },
-    { imageUrl: redux, name: "Redux", type: "State Management" },
-    { imageUrl: git, name: "Git", type: "Version Control" },
-    { imageUrl: github, name: "GitHub", type: "Version Control" },
-    { imageUrl: motion, name: "Framer Motion", type: "Animation" },
+//     { imageUrl: javascript, name: "JavaScript", type: "Frontend" },
+//     { imageUrl: typescript, name: "TypeScript", type: "Frontend" },
+//     { imageUrl: react, name: "React", type: "Frontend" },
+//     { imageUrl: nextjs, name: "Next.js", type: "Frontend" },
+//     { imageUrl: nodejs, name: "Node.js", type: "Backend" },
+//     { imageUrl: express, name: "Express", type: "Backend" },
+//     { imageUrl: mongodb, name: "MongoDB", type: "Database" },
+//     { imageUrl: tailwindcss, name: "Tailwind CSS", type: "Frontend" },
+//     { imageUrl: mui, name: "Material UI", type: "Frontend" },
+//     { imageUrl: css, name: "CSS", type: "Frontend" },
+//     { imageUrl: html, name: "HTML", type: "Frontend" },
+//     { imageUrl: redux, name: "Redux", type: "State Management" },
+//     { imageUrl: git, name: "Git", type: "Version Control" },
+    { imageUrl: github, name: "GitHub", type: "Version Control" }
+//     { imageUrl: motion, name: "Framer Motion", type: "Animation" },
   ];
   
 
-  export const experiences = [
-    {
-      title: "Graduate Assistant – AI Systems & Research",
-      company_name: "Fordham University",
-      icon: fordham, // Replace with a Fordham icon if available
-      iconBg: "#d1c4e9",
-      date: "Aug 2024 – Present",
-      points: [
-        "Collaborated with research teams and faculty to scope and document AI-based systems with a focus on transparency and maintainability.",
-        "Deployed AI models that automated manual tasks, reducing processing time by 35% and improving decision accuracy by 20%.",
-        "Built predictive models that enhanced data workflows, improving processing efficiency by 30%.",
-      ],
-    },
-    {
-      title: "Software Engineering Intern",
-      company_name: "Neev Infosoft",
-      icon: soft, // You can replace this with your company’s actual logo or a placeholder
-      iconBg: "#bbf7d0",
-      date: "Sep 2022 – Feb 2024",
-      points: [
-        "Improved system performance by 30% through optimized database schema and efficient indexing techniques.",
-        "Developed modular, object-oriented software components, reducing code maintenance time by 40%.",
-        "Conducted unit and integration testing, achieving over 95% test coverage and system reliability.",
-      ],
-    },
-    {
-      title: "Backend Developer Intern – eCommerce Integration",
-      company_name: "IdeaBright Infotech Pvt. Ltd.",
-      icon: dev,
-      iconBg: "#fef08a",
-      date: "May 2022 – Jun 2022",
-      points: [
-        "Researched nopCommerce using ASP.NET Core and MS SQL Server to implement scalable eCommerce solutions.",
-        "Integrated payment gateway APIs and optimized transaction processes, resulting in a 25% speed improvement.",
-        "Developed and deployed custom plugins to expand platform functionality and improve user experience.",
-      ],
-    }
-  ];
+ // constants/index.js
+// Updated workExperiences with correct animation names for your 3D model
+
+export const workExperiences = [
+  {
+    title: "Graduate Assistant - Computational Neural Science",
+    company_name: "Fordham University",
+    icon: fordham, // Your imported icon
+    iconBg: "#d1c4e9",
+    date: "Aug 2024 – Present",
+    animation: "victory",
+    points: [
+      "Collaborated with research teams and faculty to scope and document AI-based systems with a focus on transparency and maintainability.",
+      "Deployed AI models that automated manual tasks, reducing processing time by 35% and improving decision accuracy by 20%.",
+      "Built predictive models that enhanced data workflows, improving processing efficiency by 30%.",
+    ],
+  },
+  {
+    title: "Software Engineering Intern",
+    company_name: "Neev Infosoft",
+    icon: soft, // Your imported icon
+    iconBg: "#bbf7d0",
+    date: "Sep 2022 – Feb 2024",
+    animation: "salute", // ✅ Changed from "walk" to "salute"
+    points: [
+      "Improved system performance by 30% through optimized database schema and efficient indexing techniques.",
+      "Developed modular, object-oriented software components, reducing code maintenance time by 40%.",
+      "Conducted unit and integration testing, achieving over 95% test coverage and system reliability.",
+    ],
+  },
+  {
+    title: "Backend Developer Intern – eCommerce Integration",
+    company_name: "IdeaBright Infotech Pvt. Ltd.",
+    icon: dev, // Your imported icon
+    iconBg: "#fef08a",
+    date: "May 2022 – Jun 2022",
+    animation: "clapping", // ✅ Changed from "jump" to "clapping"
+    points: [
+      "Researched nopCommerce using ASP.NET Core and MS SQL Server to implement scalable eCommerce solutions.",
+      "Integrated payment gateway APIs and optimized transaction processes, resulting in a 25% speed improvement.",
+      "Developed and deployed custom plugins to expand platform functionality and improve user experience.",
+    ],
+  }
+];
+
+// Animation mapping for reference (if you need to map other animations later)
+export const animationMap = {
+  "typing": "victory",    
+  "walk": "salute",      
+  "jump": "clapping",     
+  "coding": "victory",
+  "thinking": "salute",
+  "working": "clapping"
+};
+
+// Valid animations that your 3D model supports
+export const validAnimations = ['idle', 'salute', 'clapping', 'victory'];
+  
   
 
 
   
-  export const projects = [
+export const projects = [
     {
       iconUrl: hour,
       theme: 'btn-back-pink',

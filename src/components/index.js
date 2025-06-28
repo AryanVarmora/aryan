@@ -4,6 +4,8 @@ import Loader from "./Loader";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import HomeInfo from "./HomeInfo";
+import Developer from "./Developer";
+
 
 export {
     CTA,
@@ -11,5 +13,6 @@ export {
     Loader,
     Navbar,
     Footer,
-    HomeInfo
+    HomeInfo,
+    Developer
 }
