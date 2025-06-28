@@ -3,7 +3,7 @@
 import React, { useRef, useEffect } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 
-import scene from "../assets/3d/fox.glb";
+import scene from "../assets/3d/fox.glb?url";
 
 
 export function Fox({ currentAnimation = "idle", ...props }) {
