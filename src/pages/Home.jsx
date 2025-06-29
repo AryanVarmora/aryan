@@ -1,13 +1,15 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 
-import sakura from "../assets/sakura.mp3";
+
 import { HomeInfo, Loader } from "../components";
 import { soundoff, soundon } from "../assets/icons";
 import { Bird, Island, Plane, Sky } from "../models";
 
+
+
 const Home = () => {
-  const audioRef = useRef(new Audio(sakura));
+  const audioRef = useRef(new Audio("/sakura.mp3")); 
   audioRef.current.volume = 0.4;
   audioRef.current.loop = true;
 
@@ -127,7 +129,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Performance Indicator */}
+
       <div className='absolute top-4 left-4 z-20'>
         <div className='bg-white/10 backdrop-blur-sm text-white px-3 py-2 rounded-lg border border-white/20 text-xs'>
           <div className='flex items-center gap-2'>
@@ -137,7 +139,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Main 3D Canvas */}
+
       <Canvas
         className={`w-full h-screen bg-transparent ${
           isRotating ? "cursor-grabbing" : "cursor-grab"
@@ -145,7 +147,6 @@ const Home = () => {
         camera={{ near: 0.1, far: 1000 }}
       >
         <Suspense fallback={<Loader />}>
-          {/* Enhanced Lighting Setup */}
           <directionalLight position={[1, 1, 1]} intensity={2} />
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 5, 10]} intensity={2} />
@@ -161,7 +162,6 @@ const Home = () => {
             intensity={1}
           />
 
-          {/* 3D Models */}
           <Bird />
           <Sky isRotating={isRotating} />
           <Island
@@ -181,7 +181,7 @@ const Home = () => {
         </Suspense>
       </Canvas>
 
-      {/* Enhanced Audio Control */}
+
       <div className='absolute bottom-2 left-2 z-20'>
         <button
           onClick={() => setIsPlayingMusic(!isPlayingMusic)}
@@ -199,7 +199,7 @@ const Home = () => {
           />
         </button>
         
-        {/* Music indicator */}
+
         {isPlayingMusic && (
           <div className='absolute -top-8 left-1/2 transform -translate-x-1/2'>
             <div className='flex items-center gap-1'>
@@ -212,7 +212,7 @@ const Home = () => {
         )}
       </div>
 
-      {/* Stage Progress Indicator */}
+
       <div className='absolute bottom-2 right-2 z-20'>
         <div className='bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20'>
           <div className='flex gap-2'>
