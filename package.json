@@ -1,11 +1,9 @@
 {
-  "name": "3d-portfolio",
+  "name": "aryan",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "homepage": "https://www.aryanvarmora.com",
-
-  "scripts":{
+  "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
