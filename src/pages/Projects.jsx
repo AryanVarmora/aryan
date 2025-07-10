@@ -31,7 +31,7 @@ const featuredProjects = [
     link: "https://github.com/AryanVarmora/PromptCraft-Finance"
   },
   {
-    id: 4,
+    id: 4,   
     title: "WildEye – Wildlife Conservation AI",
     description: "AI-powered wildlife detection using the Snapshot Serengeti dataset. Detects and tracks species in real-time for conservation efforts.",
     icon: "🐾",

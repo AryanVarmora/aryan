@@ -44,7 +44,7 @@ const HomeInfo = ({ currentStage }) => {
     3: {
       text: "Led multiple projects to success over the years. Curious about the impact?",
       link: "/projects",
-      cta: "Visit my portfolio",
+      cta: "Visit my portfolio",  
     },
     4: {
       text: "Need a project done or looking for a dev? I'm just a few keystrokes away.",

@@ -23,7 +23,7 @@ const contactLinks = [
     icon: <FaInstagram className="text-xl" />,
     url: "https://instagram.com/aarryaaann",
   },
-  {
+  { 
     name: "Email",
     icon: <FaEnvelope className="text-xl" />,
     url: "mailto:aryanvarmora8@gmail.com",

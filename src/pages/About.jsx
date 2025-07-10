@@ -22,7 +22,7 @@
   );
   
   // Enhanced theme hook
-  const useTheme = () => {
+  const useTheme = () => {  
     const [isDark, setIsDark] = useState(() => {
       if (typeof window !== 'undefined') {
         return document.documentElement.classList.contains('dark');

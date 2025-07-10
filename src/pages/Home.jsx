@@ -194,7 +194,7 @@ const Home = () => {
         >
           <img
             src={!isPlayingMusic ? soundoff : soundon}
-            alt='music toggle'
+            alt='music toggle'  
             className='w-6 h-6 object-contain'
           />
         </button>
