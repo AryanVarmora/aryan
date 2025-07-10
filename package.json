@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "homepage": "https://aryanvarmora.github.io/aryan",
-  "scripts": {
+  "homepage": "https://www.aryanvarmora.com",
+
+  "scripts":{
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
