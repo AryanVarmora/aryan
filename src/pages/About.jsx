@@ -12,10 +12,10 @@
       <p className="text-lg mb-6 opacity-80">Let's build something amazing together!</p>
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
-          Get In Touch
+          <a href="#/contact">Get In Touch</a>
         </button>
         <button className="border border-current text-current px-8 py-3 rounded-lg font-semibold hover:bg-current hover:text-white transition-colors">
-          View Resume
+          <a href="#/projects">View My Projects</a>
         </button>
       </div>
     </div>
